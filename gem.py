@@ -19,7 +19,7 @@ class GeM(layers.Layer):
 
     def call(self, inputs):
         x = inputs
-        x = tf.math.max(x, 1e-6)
+        x = tf.math.maximum(x, 1e-6)
         x = tf.pow(x, self.p)
 
         x = tf.nn.avg_pool(
@@ -30,7 +30,7 @@ class GeM(layers.Layer):
         )
         x = tf.pow(x, 1.0 / self.p)
 
-        if normalize:
+        if self.normalize:
             x = tf.nn.l2_normalize(x, 1)
         return x
 
