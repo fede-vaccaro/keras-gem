@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras import layers
-
+import keras
 
 class GeM(layers.Layer):
     def __init__(self, pool_size, init_norm=3.0, normalize=False, **kwargs):
