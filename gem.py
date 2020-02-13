@@ -5,10 +5,9 @@ from keras import layers
 
 
 class GeM(layers.Layer):
-    def __init__(self, pool_size, init_norm=3.0, normalize=False, **kwargs):
+    def __init__(self, pool_size, init_norm=3.0, **kwargs):
         self.pool_size = pool_size
         self.init_norm = init_norm
-        self.normalize = normalize
 
         super(GeM, self).__init__(**kwargs)
 
@@ -21,15 +20,12 @@ class GeM(layers.Layer):
 
     def call(self, inputs):
         x = inputs
-        x = K.maximum(x, 1e-6)
+        x = K.maximum(x, 1e-12)
         x = K.pow(x, self.p)
 
         x = K.pool2d(x, pool_size=(self.pool_size, self.pool_size), strides=(self.pool_size, self.pool_size),
                      pool_mode='avg', padding='valid')
         x = K.pow(x, 1.0 / self.p)
-
-        if self.normalize:
-            x = K.l2_normalize(x, 1)
         return x
 
     def compute_output_shape(self, input_shape):
