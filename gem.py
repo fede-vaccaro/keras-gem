@@ -1,6 +1,8 @@
-import tensorflow as tf
-from keras import layers
 import keras
+import tensorflow as tf
+from keras import backend as K
+from keras import layers
+
 
 class GeM(layers.Layer):
     def __init__(self, pool_size, init_norm=3.0, normalize=False, **kwargs):
@@ -19,19 +21,15 @@ class GeM(layers.Layer):
 
     def call(self, inputs):
         x = inputs
-        x = tf.math.maximum(x, 1e-6)
-        x = tf.pow(x, self.p)
+        x = K.maximum(x, 1e-6)
+        x = K.pow(x, self.p)
 
-        x = tf.nn.avg_pool(
-            x,
-            self.pool_size,
-            self.pool_size,
-            'VALID',
-        )
-        x = tf.pow(x, 1.0 / self.p)
+        x = K.pool2d(x, pool_size=(self.pool_size, self.pool_size), strides=(self.pool_size, self.pool_size),
+                     pool_mode='avg', padding='valid')
+        x = K.pow(x, 1.0 / self.p)
 
         if self.normalize:
-            x = tf.nn.l2_normalize(x, 1)
+            x = K.l2_normalize(x, 1)
         return x
 
     def compute_output_shape(self, input_shape):
